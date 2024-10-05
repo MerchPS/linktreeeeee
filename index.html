@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>GeneRich Private Server</title>
+    <style>
+        body {
+            background: url('background.jpg') no-repeat center center fixed; /* Ganti dengan gambar latar belakang yang diinginkan */
+            background-size: cover;
+            overflow: hidden; /* Menyembunyikan scroll bar jika ada */
+            position: relative;
+            animation: backgroundAnimation 10s ease infinite; /* Efek latar belakang */
+        }
+
+        @keyframes backgroundAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Agar tidak mengganggu interaksi lainnya */
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            opacity: 0.7;
+            animation: particleAnimation 4s linear infinite;
+        }
+
+        @keyframes particleAnimation {
+            0% { transform: translateY(0) scale(0.5); }
+            50% { transform: translateY(-100vh) scale(1); }
+            100% { transform: translateY(0) scale(0.5); }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+        }
+        .title {
+            animation: typing 4s steps(30) forwards;
+            white-space: nowrap;
+            overflow: hidden;
+            text-align: center;
+            margin-top: 20px;
+        }
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+        .logo {
+            width: 128px;
+            height: 128px;
+            border-radius: 50%; /* Membuat logo menjadi bulat */
+            object-fit: cover; 
+        }
+        .link-button {
+            background-color: #FF8C00; /* Oranye tua */
+            border-radius: 15px; /* Sudut tumpul untuk tombol link */
+            transition: transform 0.2s ease, background-color 0.2s ease; /* Tambahkan transisi untuk warna latar belakang */
+        }
+        .link-button:hover {
+            background-color: #FFA500; /* Oranye muda */
+            transform: scale(1.05); /* Efek saat hover */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen relative">
+
+    <!-- Efek Partikel -->
+    <div class="particles"></div>
+
+    <!-- Logo di atas -->
+    <img src="logo.jpg" alt="Logo" class="logo mb-4">
+
+    <!-- Judul di tengah -->
+    <h1 class="text-4xl font-bold title text-center" id="title"></h1>
+    
+    <div id="links" class="flex flex-col items-center space-y-4 mt-4">
+        <!-- Links will be dynamically inserted here -->
+    </div>
+
+    <!-- Copyright di bawah -->
+    <footer class="mt-6 text-white">
+        <p class="fade-in copyright">&copy; 2024 GeneRich Private Server. Semua hak dilindungi.</p>
+    </footer>
+
+    <script>
+        async function fetchLinks() {
+            const response = await fetch('config.json');
+            const data = await response.json();
+            return data;
+        }
+
+        function createLinkElement(title, url, icon) {
+            const linkElement = document.createElement('a');
+            linkElement.href = url;
+            linkElement.target = '_blank';
+            linkElement.className = `fade-in link-button text-white p-4 rounded shadow-lg transition flex items-center space-x-2 w-80 text-center`; // Menghapus warna tombol dari config
+            linkElement.innerHTML = `<img src="${icon}" alt="${title} Logo" class="w-6 h-6"> <span>${title}</span>`;
+            return linkElement;
+        }
+
+        function initLinks(data) {
+            const linksContainer = document.getElementById('links');
+            data.links.forEach(link => {
+                const linkElement = createLinkElement(link.title, link.url, link.icon);
+                linksContainer.appendChild(linkElement);
+            });
+        }
+
+        function handleScroll() {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach(element => {
+                const rect = element.getBoundingClientRect();
+                if (rect.top < window.innerHeight) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 15 + 5; // Ukuran partikel
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}vw`; // Posisi acak
+                particle.style.animationDuration = `${Math.random() * 3 + 2}s`; // Durasi acak
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const data = await fetchLinks();
+            document.getElementById('title').textContent = data.title; // Mengisi judul
+            document.getElementById('title').style.color = data.titleColor; // Mengatur warna judul
+            initLinks(data);
+            handleScroll(); // Check on initial load
+            window.addEventListener('scroll', handleScroll); // Add scroll event listener
+
+            // Menampilkan judul dengan efek fade-in
+            const titleElement = document.getElementById('title');
+            setTimeout(() => {
+                titleElement.classList.add('visible');
+            }, 100); // Delay sedikit untuk efek
+
+            // Menampilkan copyright dengan efek fade-in
+            const copyrightElement = document.querySelector('.copyright');
+            setTimeout(() => {
+                copyrightElement.classList.add('visible');
+            }, 4500); // Delay agar muncul setelah judul
+
+            createParticles(); // Membuat partikel saat halaman dimuat
+        });
+    </script>
+</body>
+</html>

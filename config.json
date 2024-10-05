@@ -1,0 +1,25 @@
+{
+    "title": "GeneRich Private Server",
+    "titleColor": "#ffffff",
+    "buttonColor": {
+        "default": "bg-orange-700",
+        "hover": "bg-orange-300"
+    },
+    "links": [
+        {
+            "title": "WhatsApp Grup",
+            "url": "https://chat.whatsapp.com/oasoasy",
+            "icon": "wa.svg"
+        },
+        {
+            "title": "PowerTunnel Host [ Copy Url Here ]",
+            "url": "https://blobama",
+            "icon": "download.svg"
+        },
+        {
+            "title": "Link Host Lengkap [ 3 In 1 ]",
+            "url": "https://sabarananinhk",
+            "icon": "download.svg"
+        }
+    ]
+}
